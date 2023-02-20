@@ -4,7 +4,13 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ModalService {
-  visible: boolean = false;
+  private visible: boolean = false;
 
-  constructor() {}
+  isModalOpen(): boolean {
+    return this.visible;
+  }
+
+  toggleModal(): void {
+    this.visible = !this.visible;
+  }
 }
