@@ -3,32 +3,17 @@
   <!-- Name -->
   <div class="mb-3">
     <label class="inline-block mb-2">Name</label>
-    <input type="text" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      placeholder="Enter Name" formControlName='name' minlength="3" />
-    <p *ngIf="registerForm.controls['name'].touched && registerForm.controls['name'].dirty && registerForm.controls['name']['errors']?.['required']"
-      class='text-red-400'>
-      Field is required
-    </p>
-    <p *ngIf="registerForm.controls['name']['errors']?.['minlength']" class='text-red-400'>
-      The value you inputted is {{registerForm.controls['name']['errors']?.['minlength']['actualLength']}} characters
-      long. <br />
-      It must be at least {{registerForm.controls['name']['errors']?.['minlength']['requiredLength']}} .
-    </p>
+    <app-input [control]="name" placeholder="Enter Name"></app-input>
   </div>
   <!-- Email -->
   <div class="mb-3">
     <label class="inline-block mb-2">Email</label>
-    <input type="email" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      placeholder="Enter Email" formControlName='email' />
+    <app-input [control]="email" type="email" placeholder="Enter Email"></app-input>
   </div>
   <!-- Age -->
   <div class="mb-3">
     <label class="inline-block mb-2">Age</label>
-    <input type="number" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      formControlName='age' />
+    <app-input [control]="age" type="number" placeholder="Enter Age"></app-input>
   </div>
   <!-- Password -->
   <div class="mb-3">
