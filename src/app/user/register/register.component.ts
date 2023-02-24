@@ -24,9 +24,16 @@ export class RegisterComponent {
     Validators.min(18),
     Validators.max(120),
   ]);
-  password: FormControl = new FormControl('', [Validators.required]);
+  password: FormControl = new FormControl('', [
+    Validators.required,
+    Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm),
+  ]);
   confirmPassword: FormControl = new FormControl('', [Validators.required]);
-  phoneNumber: FormControl = new FormControl('', [Validators.required]);
+  phoneNumber: FormControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(11),
+    Validators.maxLength(11),
+  ]);
 
   registerForm: FormGroup = new FormGroup({
     name: this.name,
@@ -40,4 +47,6 @@ export class RegisterComponent {
   constructor() {
     this.registerForm.controls['name'];
   }
+
+  register($event: Event): void {}
 }

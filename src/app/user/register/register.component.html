@@ -1,5 +1,5 @@
 <!-- Registration Form -->
-<form [formGroup]="registerForm">
+<form [formGroup]="registerForm" (ngSubmit)="register($event)">
   <!-- Name -->
   <div class="mb-3">
     <label class="inline-block mb-2">Name</label>
@@ -18,26 +18,22 @@
   <!-- Password -->
   <div class="mb-3">
     <label class="inline-block mb-2">Password</label>
-    <input type="password" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      placeholder="Password" formControlName='password' />
+    <app-input [control]="password" type="password" placeholder="Enter Password"></app-input>
   </div>
   <!-- Confirm Password -->
   <div class="mb-3">
     <label class="inline-block mb-2">Confirm Password</label>
-    <input type="password" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      placeholder="Confirm Password" formControlName='confirmPassword' />
+    <app-input [control]="confirmPassword" type="password" placeholder="Confirm Password"></app-input>
+
   </div>
   <!-- Phone Number -->
   <div class="mb-3">
     <label class="inline-block mb-2">Phone Number</label>
-    <input type="text" class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
-                  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400"
-      placeholder="Enter Phone Number" formControlName='phoneNumber' />
+    <app-input [control]="phoneNumber" placeholder="Enter Phone Number" format="(00) 0 0000-0000"></app-input>
   </div>
-  <button type="submit" class="block w-full bg-indigo-400 text-white py-1.5 px-3 rounded transition
-                hover:bg-indigo-500">
+  <button type="submit"
+    class="block w-full bg-indigo-400 text-white py-1.5 px-3 rounded transition hover:bg-indigo-500 disabled:opacity-50 disabled:bg-indigo-400"
+    [disabled]="registerForm.invalid">
     Submit
   </button>
 </form>
