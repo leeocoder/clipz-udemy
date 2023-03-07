@@ -6,6 +6,9 @@
 /out-tsc
 /bazel-out
 /template
+/.angular
+/.history
+/.vscode
 
 # Node
 /node_modules
