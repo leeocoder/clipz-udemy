@@ -8,18 +8,20 @@
       <!-- Primary Navigation -->
       <ul class="flex flex-row mt-1">
         <!-- Navigation Links -->
-        <li>
+        <li *ngIf="!(auth.isAuthenticated$ | async); else authLinks">
           <a class="px-2" href="#" (click)="openModal($event)">Login / Register</a>
         </li>
-        <li>
-          <a class="px-2" href="#">Manage</a>
-        </li>
-        <li>
-          <a class="px-2" href="#">Upload</a>
-        </li>
-        <li>
-          <a class="px-2" href="about.html">About</a>
-        </li>
+        <ng-template #authLinks>
+          <li>
+            <a class="px-2" href="#">Manage</a>
+          </li>
+          <li>
+            <a class="px-2" href="#">Upload</a>
+          </li>
+          <li>
+            <a class="px-2" href="about.html">About</a>
+          </li>
+        </ng-template>
       </ul>
       <!-- Language Switcher -->
       <ul class="flex flex-row ml-auto">
@@ -31,6 +33,8 @@
             <span class="ml-1">English</span>
           </a>
         </li>
+        <a class="pl-4" href="#" *ngIf="(auth.isAuthenticated$ | async)" (click)="logout($event)">Logout</a>
+
         <li style="display: none;">
           <a href="#">
             <img

@@ -52,14 +52,13 @@ export class RegisterComponent {
     this.showAlert = true;
     this.alertMessage = 'Please Wait! Your account is being created.';
     this.alertColor = 'blue';
-    const { email, password } = this.registerForm.value;
-
     try {
       await this.authService.createUser(this.registerForm.value as IUser);
     } catch (error) {
       console.error(error);
       this.alertMessage = 'A unexpected error ocurred. Please try again later.';
       this.alertColor = 'red';
+      return;
     }
 
     this.alertMessage = 'Success! Your account has been created.';
