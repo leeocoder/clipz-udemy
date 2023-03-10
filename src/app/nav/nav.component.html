@@ -12,14 +12,17 @@
           <a class="px-2" href="#" (click)="openModal($event)">Login / Register</a>
         </li>
         <ng-template #authLinks>
-          <li>
-            <a class="px-2" href="#">Manage</a>
+          <li routerLinkActive="text-indigo-400">
+            <a class="px-2" routerLink="/manage" routerLinkActive="text-indigo-400"
+              [routerLinkActiveOptions]="{exact: true}">Manage</a>
           </li>
-          <li>
-            <a class="px-2" href="#">Upload</a>
+          <li routerLinkActive="text-indigo-400">
+            <a class="px-2" routerLink="/upload" routerLinkActive="text-indigo-400"
+              [routerLinkActiveOptions]="{exact: true}">Upload</a>
           </li>
-          <li>
-            <a class="px-2" routerLink="/about">About</a>
+          <li routerLinkActive="text-indigo-400">
+            <a class="px-2" routerLink="/about" routerLinkActive="text-indigo-400"
+              [routerLinkActiveOptions]="{exact: true}">About</a>
           </li>
         </ng-template>
       </ul>
@@ -33,7 +36,7 @@
             <span class="ml-1">English</span>
           </a>
         </li>
-        <a class="pl-4" href="#" *ngIf="(auth.isAuthenticated$ | async)" (click)="logout($event)">Logout</a>
+        <a class="pl-4" href="#" *ngIf="(auth.isAuthenticated$ | async)" (click)="auth.logout($event)">Logout</a>
 
         <li style="display: none;">
           <a href="#">
