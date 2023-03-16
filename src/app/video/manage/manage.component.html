@@ -42,11 +42,11 @@
           <span class="material-icons text-base">build</span>
         </a>
         <a href="#" class="flex-1 p-2 rounded-br-2xl transition hover:text-indigo-400">
-          <span class="material-icons text-base">delete</span>
+          <span (click)="deleteClip($event, clip)" class="material-icons text-base">delete</span>
         </a>
       </div>
 
     </div>
   </div>
 </div>
-<app-edit></app-edit>
+<app-edit [activeClip]='activeClip' (update)="update($event)"></app-edit>
