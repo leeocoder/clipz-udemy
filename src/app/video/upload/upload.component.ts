@@ -11,6 +11,7 @@ import firebase from 'firebase/compat/app';
 import { ClipService } from 'src/app/services/clip.service';
 import IClip from 'src/app/models/clips.model';
 import { Router } from '@angular/router';
+import { FfmpegService } from 'src/app/services/ffmpeg.service';
 
 @Component({
   selector: 'app-upload',
@@ -28,6 +29,7 @@ export class UploadComponent implements OnDestroy {
   percentage: number = 0;
   user: firebase.User | null = null;
   task?: AngularFireUploadTask;
+  screenshots: string[] = [];
 
   alertColor: string = 'blue';
   alertMessage: string = 'Please wait! your clip is being uploaded';
@@ -40,22 +42,25 @@ export class UploadComponent implements OnDestroy {
   constructor(
     private storage: AngularFireStorage,
     private clipService: ClipService,
+    public ffmpegService: FfmpegService,
     private auth: AngularFireAuth,
     private router: Router
   ) {
     this.auth.user.subscribe((user) => (this.user = user));
+    this.ffmpegService.init();
   }
 
   ngOnDestroy(): void {
     this.task?.cancel();
   }
 
-  storeFile(event: Event): void {
+  async storeFile(event: Event): Promise<void> {
     this.isDragOver = false;
     this.file = (event as DragEvent).dataTransfer
       ? (event as DragEvent).dataTransfer?.files.item(0) ?? null
       : (event.target as HTMLInputElement).files?.item(0) ?? null;
     if (!this.file || this.file.type !== 'video/mp4') return;
+    this.screenshots = await this.ffmpegService.getScreenshots(this.file);
     this.title.setValue(this.file.name.replace(/\.[^/.]+$/, ''));
     this.nextStep = true;
   }
