@@ -5,7 +5,7 @@ import {
   AngularFireUploadTask,
 } from '@angular/fire/compat/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { last, switchMap } from 'rxjs';
+import { combineLatest, last, switchMap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import firebase from 'firebase/compat/app';
 import { ClipService } from 'src/app/services/clip.service';
@@ -29,7 +29,9 @@ export class UploadComponent implements OnDestroy {
   percentage: number = 0;
   user: firebase.User | null = null;
   task?: AngularFireUploadTask;
+  screenshotTask?: AngularFireUploadTask;
   screenshots: string[] = [];
+  selectedScreenshot: string = '';
 
   alertColor: string = 'blue';
   alertMessage: string = 'Please wait! your clip is being uploaded';
@@ -55,17 +57,21 @@ export class UploadComponent implements OnDestroy {
   }
 
   async storeFile(event: Event): Promise<void> {
+    if (this.ffmpegService.isRunning) return;
+
     this.isDragOver = false;
     this.file = (event as DragEvent).dataTransfer
       ? (event as DragEvent).dataTransfer?.files.item(0) ?? null
       : (event.target as HTMLInputElement).files?.item(0) ?? null;
     if (!this.file || this.file.type !== 'video/mp4') return;
+
     this.screenshots = await this.ffmpegService.getScreenshots(this.file);
+    this.selectedScreenshot = this.screenshots[0];
     this.title.setValue(this.file.name.replace(/\.[^/.]+$/, ''));
     this.nextStep = true;
   }
 
-  uploadFile(): void {
+  async uploadFile(): Promise<void> {
     this.uploadFrom.disable();
     this.showAlert = true;
     this.alertColor = 'blue';
@@ -75,10 +81,24 @@ export class UploadComponent implements OnDestroy {
     this.alertMessage = 'Please wait! your clip is being uploaded';
     const clipFileName = uuid();
     const clipPath = `clips/${clipFileName}.mp4`;
+    const screenshotBlob = await this.ffmpegService.blobFromURL(
+      this.selectedScreenshot
+    );
+    const screenshotPath = `screenshots/${clipFileName}.png`;
+
+    this.screenshotTask = this.storage.upload(screenshotPath, screenshotBlob);
+
     this.task = this.storage.upload(clipPath, this.file);
     const clipReference = this.storage.ref(clipPath);
-    this.task.percentageChanges().subscribe((progress) => {
-      this.percentage = (progress as number) / 100;
+
+    combineLatest([
+      this.task.percentageChanges(),
+      this.screenshotTask.percentageChanges(),
+    ]).subscribe((progress) => {
+      const [clipProgress, screenshotProgress] = progress;
+      if (!clipProgress || !screenshotProgress) return;
+      const total = clipProgress + screenshotProgress;
+      this.percentage = (total as number) / 200;
     });
     this.task
       .snapshotChanges()
@@ -119,5 +139,9 @@ export class UploadComponent implements OnDestroy {
     this.inSubmission = false;
     this.showPercentage = false;
     console.log(error);
+  }
+
+  selectScreenshot(screenshot: string): void {
+    this.selectedScreenshot = screenshot;
   }
 }

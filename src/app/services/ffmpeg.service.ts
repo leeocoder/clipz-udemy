@@ -6,6 +6,7 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 })
 export class FfmpegService {
   public isReady: boolean = false;
+  public isRunning: boolean = false;
   private ffmpeg;
   constructor() {
     this.ffmpeg = createFFmpeg({ log: true });
@@ -20,6 +21,7 @@ export class FfmpegService {
   }
 
   async getScreenshots(file: File): Promise<string[]> {
+    this.isRunning = true;
     const data = await fetchFile(file);
     this.ffmpeg.FS('writeFile', file.name, data);
     const seconds = [1, 2, 3];
@@ -55,8 +57,15 @@ export class FfmpegService {
       console.log(screenshotUrl);
       screenshots.push(screenshotUrl);
     });
+    this.isRunning = false;
     return screenshots;
   }
 
   // makerScreenshotCommander(second) {}
+
+  async blobFromURL(url: string): Promise<Blob> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return blob;
+  }
 }
