@@ -5,10 +5,11 @@ import {
   ElementRef,
   ViewEncapsulation,
 } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import videojs from 'video.js';
 import IClip from '../models/clips.model';
 import { DatePipe } from '@angular/common';
+import Video from 'video.js';
 
 @Component({
   selector: 'app-clip',
