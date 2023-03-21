@@ -103,9 +103,6 @@ export class ClipService implements Resolve<IClip | null> {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): IClip | Observable<IClip | null> | Promise<IClip | null> | null {
-    console.log('-------------------------------');
-    console.log(route.params['id']);
-    console.log('-------------------------------');
     return this.clipsCollection
       .doc(route.params['id'])
       .get()
