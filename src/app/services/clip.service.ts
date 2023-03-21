@@ -15,6 +15,8 @@ import { map, of, switchMap, BehaviorSubject, combineLatest } from 'rxjs';
 })
 export class ClipService {
   public clipsCollection: AngularFirestoreCollection<IClip>;
+  pagesClips: IClip[] = [];
+  pendingRequest: boolean = false;
 
   constructor(
     private db: AngularFirestore,
@@ -55,5 +57,31 @@ export class ClipService {
     await screenshotRef.delete();
     await clipRef.delete();
     await this.clipsCollection.doc(clip.docID).delete();
+  }
+
+  async getClips() {
+    if (this.pendingRequest) return;
+    this.pendingRequest = true;
+    let query = this.clipsCollection.ref.orderBy('timestamp', 'desc').limit(6);
+
+    const { length } = this.pagesClips;
+
+    if (length) {
+      const lastDocId = this.pagesClips[length - 1].docID;
+      const lastDoc = await this.clipsCollection
+        .doc(lastDocId)
+        .get()
+        .toPromise();
+
+      query = query.startAt(lastDoc);
+    }
+    const snapshot = await query.get();
+    snapshot.forEach((doc) => {
+      this.pagesClips.push({
+        docID: doc.id,
+        ...doc.data(),
+      });
+    });
+    this.pendingRequest = false;
   }
 }
