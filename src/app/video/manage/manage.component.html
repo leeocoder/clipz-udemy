@@ -14,8 +14,9 @@
 <!-- User's Video Section -->
 <div class="container mx-auto my-8">
   <!-- Video List -->
-  <div *ngFor="let clip of clips" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="mt-6 rounded-tl-2xl rounded-br-2xl shadow-xl bg-secondary flex flex-col justify-start">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div *ngFor="let clip of clips"
+      class="mt-6 rounded-tl-2xl rounded-br-2xl shadow-xl bg-secondary flex flex-col justify-start">
 
       <!-- Image -->
       <a [routerLink]="['/','clip', clip.docID]">

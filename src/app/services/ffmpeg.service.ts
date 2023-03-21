@@ -1,4 +1,3 @@
-import 'sharedarraybuffer';
 import { Injectable } from '@angular/core';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
