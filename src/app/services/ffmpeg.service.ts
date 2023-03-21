@@ -1,3 +1,4 @@
+import 'sharedarraybuffer';
 import { Injectable } from '@angular/core';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
@@ -59,8 +60,6 @@ export class FfmpegService {
     this.isRunning = false;
     return screenshots;
   }
-
-  // makerScreenshotCommander(second) {}
 
   async blobFromURL(url: string): Promise<Blob> {
     const response = await fetch(url);
