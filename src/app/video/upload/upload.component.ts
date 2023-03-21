@@ -5,7 +5,7 @@ import {
   AngularFireUploadTask,
 } from '@angular/fire/compat/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { combineLatest, last, switchMap } from 'rxjs';
+import { combineLatest, forkJoin, last, switchMap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import firebase from 'firebase/compat/app';
 import { ClipService } from 'src/app/services/clip.service';
@@ -81,14 +81,14 @@ export class UploadComponent implements OnDestroy {
     this.alertMessage = 'Please wait! your clip is being uploaded';
     const clipFileName = uuid();
     const clipPath = `clips/${clipFileName}.mp4`;
+    const screenshotPath = `screenshots/${clipFileName}.png`;
     const screenshotBlob = await this.ffmpegService.blobFromURL(
       this.selectedScreenshot
     );
-    const screenshotPath = `screenshots/${clipFileName}.png`;
-
     this.screenshotTask = this.storage.upload(screenshotPath, screenshotBlob);
-
     this.task = this.storage.upload(clipPath, this.file);
+
+    const screenShotReference = this.storage.ref(screenshotPath);
     const clipReference = this.storage.ref(clipPath);
 
     combineLatest([
@@ -100,25 +100,37 @@ export class UploadComponent implements OnDestroy {
       const total = clipProgress + screenshotProgress;
       this.percentage = (total as number) / 200;
     });
-    this.task
-      .snapshotChanges()
+    forkJoin([
+      this.task.snapshotChanges(),
+      this.screenshotTask.snapshotChanges(),
+    ])
       .pipe(
-        last(),
-        switchMap(() => clipReference.getDownloadURL())
+        switchMap(() =>
+          forkJoin([
+            clipReference.getDownloadURL(),
+            screenShotReference.getDownloadURL(),
+          ])
+        )
       )
       .subscribe({
-        next: (url) => this.onUploadFileSuccess(url, clipFileName),
+        next: (urls) => this.onUploadFileSuccess(urls, clipFileName),
         error: (error) => this.onUploadFileError(error),
       });
   }
 
-  async onUploadFileSuccess(url: unknown, clipFileName: string): Promise<void> {
+  async onUploadFileSuccess(
+    urls: string[],
+    clipFileName: string
+  ): Promise<void> {
+    const [clipUrl, screenshotURl] = urls;
     const clip: IClip = {
       uid: this.user?.uid as string,
       displayName: this.user?.displayName as string,
       title: this.title.value as string,
       fileName: `${clipFileName}.mp4`,
-      url: url as string,
+      url: clipUrl,
+      screenshotURl,
+      screenshotFileName: `${clipFileName}.mp4`,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     };
     const clipDocumentReference = await this.clipService.createClip(clip);

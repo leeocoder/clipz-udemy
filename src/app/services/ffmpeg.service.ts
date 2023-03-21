@@ -54,7 +54,6 @@ export class FfmpegService {
       });
 
       const screenshotUrl = URL.createObjectURL(screenshotBlob);
-      console.log(screenshotUrl);
       screenshots.push(screenshotUrl);
     });
     this.isRunning = false;
